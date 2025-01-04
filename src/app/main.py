@@ -86,8 +86,9 @@ with st.sidebar:
             "Empresas",
             "Solicitações",
             "Método APLA",
-            "Dashboards",
-            "Upload",
+            "Gráficos",
+            "Upload arquivo",
+            "Face login",
             "Imagens",
 
         ],
@@ -97,8 +98,9 @@ with st.sidebar:
             "building",
             "chat",
             "file-earmark-text",
-            "list-check",
-            "clipboard-check",
+            "image",
+            "cloud-arrow-up",
+            "instagram",
             "clipboard-check",
             # "bar-chart",
             # "file-earmark-text",
@@ -183,7 +185,7 @@ elif selected == "Método APLA":
     from src.app.views import apla
     apla.show()
 
-elif selected == "Dashboards":
+elif selected == "Gráficos":
     from src.app.views import dashboards
     dashboards.show()
 
@@ -191,9 +193,13 @@ elif selected == "Imagens":
     from src.app.views import img
     img.show()
 
-elif selected == "Upload":
+elif selected == "Upload arquivo":
     from src.app.views import csv
     csv.show()
+
+elif selected == "Face login":
+    from src.app.views import face
+    face.show()
 
 
 # Carrega as variáveis do arquivo .env

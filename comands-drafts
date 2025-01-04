@@ -366,11 +366,29 @@ scp -P 8622 application-database.tar mosimann@186.250.185.87:~/
 
 scp -P 8622 application-python.tar mosimann@186.250.185.87:~/
 
+scp -P 8622 requirements.txt mosimann@186.250.185.87:~/
+
+#transferir para o container
+docker cp requirements.txt application-streamlit:/application/requirements.txt
+
+
 scp -P 8622 Dockerfile mosimann@186.250.185.87:~/
 
 scp -P 8622 init.sql mosimann@186.250.185.87:~/
 
 scp -P 8622 docker-compose.yml mosimann@186.250.185.87:~/
+
+# copiar chave para dentro do container :
+docker cp ~/.ssh/id_ed25519 application-streamlit:/root/.ssh/id_ed25519
+docker cp ~/.ssh/id_ed25519.pub application-streamlit:/root/.ssh/id_ed25519.pub
+
+chmod 600 /root/.ssh/id_ed25519
+chmod 644 /root/.ssh/id_ed25519.pub
+
+# iniciar agente ssh no container
+eval $(ssh-agent -s)
+
+
 
 # comando para saber o ip do container 
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mosimann-database
@@ -645,7 +663,7 @@ psql -h 172.18.0.3 -U mmss -d contabil
 
 # Não esquça de executar, pode ter dependencias novas :
 pip install -r requirements.txt
-
+        
 #Se precisar aleateoriamente entrar no shell container
 docker exec -it contabil bash
 

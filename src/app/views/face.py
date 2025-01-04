@@ -3,14 +3,13 @@ from src.app.views.face_create import register_face
 from src.app.views.face_login import login_face
 
 
-from src.app.models.operator_model import Operator
+def show():
+    st.title("Sistema de Reconhecimento Facial")
 
-st.title("Sistema de Reconhecimento Facial")
+    menu = ["Registrar", "Login"]
+    choice = st.sidebar.selectbox("Reconhecimento facial", menu)
 
-menu = ["Registrar", "Login"]
-choice = st.sidebar.selectbox("Menu", menu)
-
-if choice == "Registrar":
-    register_face()
-elif choice == "Login":
-    login_face()
+    if choice == "Registrar":
+        register_face()
+    elif choice == "Login":
+        login_face()
