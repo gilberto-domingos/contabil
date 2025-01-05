@@ -334,6 +334,13 @@ git fetch origin     # > Garante que as referências remotas estão atualizadas 
 
 git pull origin main
 
+git restore --staged .
+git restore .
+
+git fetch origin
+git reset --hard origin/main
+
+
 # forçar commit de novo na maquina local, mesmo que não haja mudança no código
 git add .
 
