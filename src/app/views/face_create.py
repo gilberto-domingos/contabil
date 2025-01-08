@@ -1,60 +1,82 @@
-import streamlit as st
+import asyncio
+import websockets
+from aiortc import RTCPeerConnection, VideoStreamTrack
+import json
 import cv2
-import face_recognition
-from src.database.face_database import Database
-from src.app.models.face_model import Face
+from http.server import SimpleHTTPRequestHandler
+from socketserver import TCPServer
+import webbrowser
+import threading
+import os
 
 
-class FaceRegistration:
-    def __init__(self, database):
-        self.db = database
+class VideoTrack(VideoStreamTrack):
+    def __init__(self):
+        super().__init__()
+        self.cap = cv2.VideoCapture(0)
 
-    def capture_face(self):
-        st.warning("Olhe para a câmera e aguarde...")
-        cap = cv2.VideoCapture(0)
-        ret, frame = cap.read()
-        cap.release()
-
-        if not ret:
-            return None, None
-
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        face_locations = face_recognition.face_locations(rgb_frame)
-        face_encodings = face_recognition.face_encodings(
-            rgb_frame, face_locations)
-
-        if face_encodings:
-            return frame, face_encodings[0]
-        return None, None
-
-    def save_face(self, username, face_encoding):
-        face = Face(username=username, face_encoding=face_encoding.tobytes())
-        self.db.insert_face(face.username, face.face_encoding)
-
-    def register(self, username):
-        frame, face_encoding = self.capture_face()
-
-        if frame is None:
-            st.error("Erro ao acessar a câmera.")
-            return
-
-        if face_encoding is None:
-            st.error("Nenhum rosto detectado. Tente novamente.")
-            return
-
-        self.save_face(username, face_encoding)
-        st.success(f"Usuário {username} registrado com sucesso!")
+    async def recv(self):
+        ret, frame = self.cap.read()
+        if ret:
+            return frame
 
 
-def register_face():
-    st.header("Registrar Novo Usuário")
+async def create_offer():
+    pc = RTCPeerConnection()
+    video_track = VideoTrack()
+    pc.addTrack(video_track)
 
-    username = st.text_input("Nome de Usuário")
-    capture = st.button("Capturar Rosto")
+    offer = await pc.createOffer()
+    await pc.setLocalDescription(offer)
 
-    if capture and username:
-        db = Database()
-        db.connect()
+    return offer.sdp
 
-        face_registration = FaceRegistration(database=db)
-        face_registration.register(username)
+
+async def handle_client(websocket, path):
+    # Cria a oferta
+    offer = await create_offer()
+
+    # Envia a oferta para o cliente via WebSocket
+    await websocket.send(json.dumps({"offer": offer}))
+
+    print("Oferta enviada para o cliente")
+
+    # Mantenha a conexão aberta
+    await websocket.wait_closed()
+
+
+async def websocket_server():
+    server = await websockets.serve(handle_client, "localhost", 8765)
+    await server.wait_closed()
+
+
+def serve_html():
+    # Muda o diretório de trabalho para o diretório onde o script está executando
+    # Caminho do diretório atual
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+    PORT = 8502
+    handler = SimpleHTTPRequestHandler
+    with TCPServer(("", PORT), handler) as httpd:
+        print(f"Servindo face.html em http://localhost:{PORT}")
+        webbrowser.open(f"http://localhost:{PORT}/face.html", new=2)
+        httpd.serve_forever()
+
+
+def start_http_server():
+    threading.Thread(target=serve_html, daemon=True).start()
+
+
+async def main():
+    # Inicia o servidor WebSocket
+    websocket_task = asyncio.create_task(websocket_server())
+
+    # Inicia o servidor HTTP (abrindo o navegador com face.html)
+    start_http_server()
+
+    # Aguarda o servidor WebSocket
+    await websocket_task
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

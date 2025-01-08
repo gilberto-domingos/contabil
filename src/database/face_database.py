@@ -30,20 +30,24 @@ class Database:
 
     def insert_face(self, username, face_encoding):
         self.ensure_connection()
+        print(f"Inserindo face para o usuário: {
+              username}")  # Verificação de entrada
         cur = self.conn.cursor()
         try:
             cur.execute(
                 """
-                INSERT INTO faces (username, face_encoding)
-                VALUES (%s, %s)
-                RETURNING id;
-                """,
+             INSERT INTO faces (username, face_encoding)
+             VALUES (%s, %s)
+             RETURNING id;
+             """,
                 (username, face_encoding)
             )
             self.conn.commit()
+            print("Face inserida com sucesso.")  # Verificação de sucesso
             return cur.fetchone()[0]
         except psycopg2.Error as e:
             self.conn.rollback()
+            print(f"Erro ao salvar no banco de dados: {e}")  # Exibe o erro
             raise Exception(f"Erro ao salvar no banco de dados: {e}")
 
     def get_face(self, id):

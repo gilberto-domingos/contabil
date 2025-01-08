@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebRTC Test with Capture Photo</title>
+    <style>
+        #photo {
+            display: none;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            max-width: 640px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>WebRTC Test</h2>
+    <video id="video" width="640" height="480" autoplay></video>
+    <br>
+    <button id="captureButton">Tirar Foto</button>
+    <br>
+    <img id="photo" src="" alt="Foto capturada">
+
+    <script>
+        let pc = new RTCPeerConnection();
+        let videoElement = document.getElementById("video");
+        let captureButton = document.getElementById("captureButton");
+        let photoElement = document.getElementById("photo");
+        let videoStream;
+
+        const socket = new WebSocket("ws://localhost:8765");
+
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            const offer = data.offer;
+
+            pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(offer)));
+
+            pc.createAnswer()
+                .then(answer => {
+                    pc.setLocalDescription(answer);
+                    console.log("Resposta:", answer.sdp);
+                })
+                .catch(e => console.error(e));
+
+            pc.ontrack = function (event) {
+                if (event.streams && event.streams[0]) {
+                    videoElement.srcObject = event.streams[0];
+                }
+            };
+        };
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(gotStream)
+            .catch(e => console.error(e));
+
+        function gotStream(stream) {
+            videoElement.srcObject = stream;
+            videoStream = stream;
+            stream.getTracks().forEach(track => pc.addTrack(track, stream));
+        }
+
+        captureButton.addEventListener('click', function () {
+            let canvas = document.createElement("canvas");
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            let ctx = canvas.getContext("2d");
+
+            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            let dataUrl = canvas.toDataURL("image/png");
+
+            photoElement.src = dataUrl;
+            photoElement.style.display = "block";
+        });
+    </script>
+</body>
+
+</html>

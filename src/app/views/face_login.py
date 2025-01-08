@@ -5,68 +5,48 @@ import face_recognition
 from src.database.face_database import Database
 
 
-def capture_face():
-    """
-    Captura uma imagem da webcam para reconhecimento facial.
-
-    Returns:
-        frame (ndarray): Imagem capturada.
-        face_encoding (ndarray): Codificação do rosto detectado.
-    """
-    cap = cv2.VideoCapture(0)
-    ret, frame = cap.read()
-    cap.release()
-
-    if not ret:
-        st.error("Erro ao acessar a câmera.")
-        return None, None
-
-    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    face_locations = face_recognition.face_locations(rgb_frame)
-    face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
-
-    if face_encodings:
-        return frame, face_encodings[0]
-    return None, None
-
-
 def login_face():
     """
-    Exibe a interface de login por reconhecimento facial no Streamlit.
+    Captura uma foto para login por reconhecimento facial.
     """
     st.header("Login por Reconhecimento Facial")
+    st.info("Olhe para a câmera e aguarde a identificação...")
 
-    # Conectar ao banco de dados
-    db = Database()
-    db.connect()
+    # Abrir a câmera via WebRTC
+    image = st.camera_input("Captura da câmera")
 
-    # Captura uma imagem da câmera
-    st.warning("Olhe para a câmera e aguarde...")
-    frame, face_encoding = capture_face()
+    if image:
+        # Processar imagem capturada
+        img_array = np.array(bytearray(image.read()), dtype=np.uint8)
+        frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    if frame is None:
-        return
+        # Detectar e codificar face
+        face_locations = face_recognition.face_locations(rgb_frame)
+        face_encodings = face_recognition.face_encodings(
+            rgb_frame, face_locations
+        )
 
-    # Verificar se o rosto foi reconhecido
-    known_faces = fetch_faces_from_db(db)
-    for username, encoding in known_faces:
-        match = face_recognition.compare_faces([encoding], face_encoding)
-        if match[0]:
-            st.success(f"Bem-vindo, {username}!")
-            return
+        if face_encodings:
+            db = Database()
+            db.connect()
 
-    st.error("Não permitido ! Rosto não reconhecido, tente novamente.")
+            # Buscar faces conhecidas no banco
+            known_faces = db.get_all_faces()
 
+            for row in known_faces:
+                username = row["username"]
+                known_encoding = np.frombuffer(
+                    row["face_encoding"], dtype=np.float64
+                )
 
-def fetch_faces_from_db(db):
-    """
-    Busca todas as faces cadastradas no banco de dados.
+                match = face_recognition.compare_faces(
+                    [known_encoding], face_encodings[0]
+                )
+                if match[0]:
+                    st.success(f"Bem-vindo, {username}!")
+                    return
 
-    Returns:
-        list: Lista de tuplas contendo (username, face_encoding).
-    """
-    rows = db.get_all_faces()
-    return [
-        (row["username"], np.frombuffer(row["face_encoding"], dtype=np.float64))
-        for row in rows
-    ]
+            st.error("Face não reconhecida. Tente novamente.")
+        else:
+            st.error("Nenhuma face detectada. Tente novamente.")
