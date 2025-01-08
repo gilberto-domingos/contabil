@@ -1,5 +1,5 @@
 import streamlit as st
-from src.app.views.face_create import start_server
+from src.app.views.face_create import start_http_server
 from src.app.views.face_login import login_face
 
 
@@ -10,6 +10,6 @@ def show():
     choice = st.sidebar.selectbox("Reconhecimento facial", menu)
 
     if choice == "Registrar":
-        start_server()
+        start_http_server()
     elif choice == "Login":
         login_face()
