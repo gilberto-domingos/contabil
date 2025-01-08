@@ -8,6 +8,7 @@ from socketserver import TCPServer
 import webbrowser
 import threading
 import os
+import time
 
 
 class VideoTrack(VideoStreamTrack):
@@ -51,8 +52,6 @@ async def websocket_server():
 
 
 def serve_html():
-    # Muda o diretório de trabalho para o diretório onde o script está executando
-    # Caminho do diretório atual
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     PORT = 8502
@@ -67,12 +66,20 @@ def start_http_server():
     threading.Thread(target=serve_html, daemon=True).start()
 
 
+def wait_for_server_to_start():
+    # Aguarda 2 segundos para garantir que o servidor tenha tempo de inicializar
+    time.sleep(2)
+
+
 async def main():
     # Inicia o servidor WebSocket
     websocket_task = asyncio.create_task(websocket_server())
 
     # Inicia o servidor HTTP (abrindo o navegador com face.html)
     start_http_server()
+
+    # Espera um pouco antes de seguir para o Streamlit
+    wait_for_server_to_start()
 
     # Aguarda o servidor WebSocket
     await websocket_task
