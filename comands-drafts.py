@@ -179,6 +179,9 @@ git restore --source=origin/main src/app/face.py
 
 git pull origin main
 
+git stash drop
+
+
 # forçar commit de novo na maquina local, mesmo que não haja mudança no código
 git add .
 
