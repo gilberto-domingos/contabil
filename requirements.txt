@@ -39,7 +39,6 @@ pillow==10.4.0
 plotly==5.24.1
 protobuf==5.28.2
 psycopg2==2.9.10
-psycopg2-binary==2.9.10
 pyarrow==17.0.0
 pycodestyle==2.12.1
 pycparser==2.22
@@ -71,4 +70,5 @@ tzdata==2024.2
 urllib3==2.2.3
 validate-docbr==1.10.0
 watchdog==5.0.3
+websockets==14.1
 wheel==0.44.0

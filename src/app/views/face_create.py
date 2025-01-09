@@ -57,8 +57,7 @@ def serve_html():
     PORT = 8502
     handler = SimpleHTTPRequestHandler
     with TCPServer(("", PORT), handler) as httpd:
-        print(f"Servindo face.html em http://localhost:{PORT}")
-        webbrowser.open(f"http://localhost:{PORT}/face.html", new=2)
+        webbrowser.open(f"http://186.250.185.87:{PORT}/face.html", new=2)
         httpd.serve_forever()
 
 

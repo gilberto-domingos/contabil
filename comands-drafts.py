@@ -1,5 +1,5 @@
 '''########################## IMPLEMENTAÇÕES A FAZER ###################'''
-- solicitações - atendimento online em tempo real - google meet
+# - solicitações - atendimento online em tempo real - google meet
 mensagem para cliente e explicação com link, instalar whatsapp no computado e google meet
 
 Agendamento de atendimento
@@ -167,6 +167,10 @@ git log origin/main --oneline   > verificar se você realmente fez o commit na m
 
 git status     #>para ferificar conflitos
 
+# Stash as alterações: Coloque temporariamente as alterações não registradas de lado para poder realizar o pull.
+
+git stash
+
 git fetch origin     # > Garante que as referências remotas estão atualizadas no servidor.
 
 git pull origin main
@@ -183,7 +187,15 @@ Sempre que for atualizar o projeto no servidor, parar e deletar container no ser
 Agora que você removeu o container 
 
 # Construa a IMAGEM novamente, imagens não precisam ser deletadas elas sobrescrevem
-docker-compose up --build
+#Após aplicar este arquivo, reconstrua sua imagem com:
+docker-compose build
+
+#E então inicie o serviço normalmente com:
+docker-compose up
+docker-compose up application-streamlit
+
+
+#docker-compose up --build
 
 # Exporte a imagem para um arquivo tar
 # do banco
@@ -219,9 +231,7 @@ scp -P 8622 mosimann@186.250.185.87:/home/mosimann/mosimann-streamlit.tar ~/Mosi
 scp -P 8622 mosimann@186.250.185.87:/home/mosimann/Dockerfile ~/Mosimann/
 
 
-Para transferir o docker-compose.yml do servidor para a máquina local:
-bash
-Copiar código
+#Para transferir o docker-compose.yml do servidor para a máquina local:
 scp -P 8622 mosimann@186.250.185.87:/home/mosimann/docker-compose.yml ~/Mosimann/
 
 
@@ -235,9 +245,9 @@ ssh mosimann@186.250.185.87 -p 8622
 
 # Pega o conteúdor .tar e recarrega para imagem Docker para o daemon do Docker no servidor
 # Banco 
-docker load < application-database.tar
+ docker load < application-database.tar
 
-docker load < application-python.tar
+ docker load < application-python.tar
 
 # Execute o novo container (escolha uma porta que não esteja em uso, como 8623)
 # do Banco 
