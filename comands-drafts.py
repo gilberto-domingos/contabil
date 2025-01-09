@@ -173,6 +173,10 @@ git stash
 
 git fetch origin     # > Garante que as referências remotas estão atualizadas no servidor.
 
+# autalizar no repositorio local um arquivo especifico
+git restore --source=origin/main src/app/face.py
+
+
 git pull origin main
 
 # forçar commit de novo na maquina local, mesmo que não haja mudança no código

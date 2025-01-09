@@ -1,2 +1,2 @@
-from .face_create import start_http_server
+from .face_create import capture_photo
 from .face_login import login_face
