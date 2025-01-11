@@ -84,7 +84,6 @@ with st.sidebar:
             "Home",
             "Cadastro",
             "Empresas",
-            "Solicitações",
             "Método APLA",
             "Gráficos",
             "Upload arquivo",
@@ -96,7 +95,6 @@ with st.sidebar:
             "house",
             "list-check",
             "building",
-            "chat",
             "file-earmark-text",
             "image",
             "cloud-arrow-up",
@@ -194,8 +192,8 @@ elif selected == "Imagens":
     img.show()
 
 elif selected == "Upload arquivo":
-    from src.app.views import csv
-    csv.show()
+    from src.app.views import up_files
+    up_files.show()
 
 elif selected == "Face login":
     from src.app.views import face
