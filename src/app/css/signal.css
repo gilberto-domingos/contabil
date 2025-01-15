@@ -1,0 +1,33 @@
+/* Contêiner para a bolinha e o texto */
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px auto;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Estilo para a bolinha */
+.circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+/* Cor verde para sucesso */
+.status-indicator.green .circle {
+    background-color: green;
+}
+
+/* Cor vermelha para erro */
+.status-indicator.red .circle {
+    background-color: red;
+}
+
+/* Texto branco para ambas as situações */
+.status-indicator.green,
+.status-indicator.red {
+    color: white;
+    text-shadow: 1px 1px 1px black;
+}

@@ -26,6 +26,8 @@ def show():
     try:
         # Carregar o arquivo Excel
         workbook = load_workbook(file_path)
+        saldo_classificacao_01 = 0
+        saldo_classificacao_02 = 0
 
         # Obter a primeira planilha
         sheet = workbook.active
@@ -33,12 +35,13 @@ def show():
         # Lendo a primeira linha (células A1 até L1)
         primeira_linha = [sheet.cell(
             row=1, column=col).value for col in range(1, 13)]
+
         # Filtrar valores vazios (None) da primeira linha antes de exibir no título
         primeira_linha = [str(item)
                           for item in primeira_linha if item is not None]
+
         # Exibindo a primeira linha no título do Streamlit sem as células vazias
-        st.title(f"{', '.join(primeira_linha)}")
-        #########################################
+        st.title(f"Balanço: {', '.join(primeira_linha)}")
 
         # Lendo a segunda linha (células A2 até K2 e L2 até N2)
         segunda_linha_1 = [sheet.cell(
@@ -51,29 +54,29 @@ def show():
                          segunda_linha_2 if item is not None]
 
         # Exibindo a segunda linha no subheader do Streamlit sem as células vazias
-        st.subheader(f"{', '.join(segunda_linha)}")
-        ##########################################
+        st.subheader(f"Detalhes: {', '.join(segunda_linha)}")
 
-        saldo_classificacao_01 = 0
-        saldo_classificacao_02 = 0
+        # Determinar as colunas com base no cabeçalho
+        header = [cell.value for cell in sheet[3]]
+        classificacao_col = header.index("Classificação") + 1
+        saldo_atual_col = header.index("Saldo atual") + 1
 
-        for sheet_name in workbook.sheetnames:
-            sheet = workbook[sheet_name]
+        # Iterar pelas linhas e buscar os saldos das classificações "01" e "02"
+        for row in sheet.iter_rows(min_row=4, values_only=True):
+            classificacao = row[classificacao_col - 1]
+            saldo_atual = row[saldo_atual_col - 1]
 
-            # Determinar as colunas com base no cabeçalho
-            header = [cell.value for cell in sheet[3]]
-            classificacao_col = header.index("Classificação") + 1
-            saldo_atual_col = header.index("Saldo atual") + 1
+            # Verificar se o saldo_atual é um número e adicionar corretamente
+            try:
+                saldo_atual_valor = locale.atof(
+                    str(saldo_atual)) if saldo_atual is not None else 0
+            except ValueError:
+                saldo_atual_valor = 0
 
-            # Iterar pelas linhas e buscar os saldos das classificações "01" e "02"
-            for row in sheet.iter_rows(min_row=4, values_only=True):
-                classificacao = row[classificacao_col - 1]
-                saldo_atual = row[saldo_atual_col - 1]
-
-                if classificacao == "01":
-                    saldo_classificacao_01 += locale.atof(str(saldo_atual))
-                elif classificacao == "02":
-                    saldo_classificacao_02 += locale.atof(str(saldo_atual))
+            if classificacao == "01":
+                saldo_classificacao_01 += saldo_atual_valor
+            elif classificacao == "02":
+                saldo_classificacao_02 += saldo_atual_valor
 
         # Formatar os resultados como moeda brasileira com "R$"
         saldo_classificacao_01_formatado = locale.currency(
@@ -90,10 +93,10 @@ def show():
         # Comparar os saldos
         if saldo_classificacao_01 == saldo_classificacao_02:
             cor = "green"
-            mensagem = "Ok, balanço aprovado!"
+            mensagem = "Ok, balanço aprovado !"
         else:
             cor = "red"
-            mensagem = "Reprovado! O balanço possui erros!"
+            mensagem = "Reprovado ! O balanço possui erros ! A operadora estará sendo notificada !"
 
         # Exibir a bolinha e a mensagem
         st.markdown(f'<div class="status-indicator {cor}"><div class="circle"></div><span>{
