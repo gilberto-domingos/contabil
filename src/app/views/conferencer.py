@@ -1,13 +1,22 @@
 import streamlit as st
 from openpyxl import load_workbook
 import locale
-from io import BytesIO
 
 
 def load_css(file_name):
     """Carrega o arquivo CSS externo."""
     with open(file_name) as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+
+def safe_convert_to_float(value):
+    """Converte um valor para float de forma segura, removendo formatações indesejadas."""
+    try:
+        # Remove espaços e substitui separadores de milhares
+        clean_value = str(value).strip().replace(".", "").replace(",", ".")
+        return locale.atof(clean_value)
+    except (ValueError, TypeError):
+        return 0.0
 
 
 def show():
@@ -27,33 +36,6 @@ def show():
             # Carregar o arquivo Excel a partir do upload
             workbook = load_workbook(uploaded_file)
 
-            # Obter a primeira planilha
-            sheet = workbook.active
-
-            # Lendo a primeira linha (células A1 até L1)
-            primeira_linha = [sheet.cell(
-                row=1, column=col).value for col in range(1, 13)]
-            # Filtrar valores vazios (None) da primeira linha antes de exibir no título
-            primeira_linha = [str(item)
-                              for item in primeira_linha if item is not None]
-            # Exibindo a primeira linha no título do Streamlit sem as células vazias
-            st.title(f"{', '.join(primeira_linha)}")
-            #########################################
-
-            # Lendo a segunda linha (células A2 até K2 e L2 até N2)
-            segunda_linha_1 = [sheet.cell(
-                row=2, column=col).value for col in range(1, 12)]  # A2:K2
-            segunda_linha_2 = [sheet.cell(
-                row=2, column=col).value for col in range(12, 15)]  # L2:N2
-
-            # Filtrar valores vazios (None) das duas partes da segunda linha antes de exibir no subheader
-            segunda_linha = [str(item) for item in segunda_linha_1 +
-                             segunda_linha_2 if item is not None]
-
-            # Exibindo a segunda linha no subheader do Streamlit sem as células vazias
-            st.subheader(f"{', '.join(segunda_linha)}")
-            ##########################################
-
             saldo_classificacao_01 = 0
             saldo_classificacao_02 = 0
 
@@ -67,13 +49,15 @@ def show():
 
                 # Iterar pelas linhas e buscar os saldos das classificações "01" e "02"
                 for row in sheet.iter_rows(min_row=4, values_only=True):
-                    classificacao = row[classificacao_col - 1]
+                    classificacao = str(row[classificacao_col - 1]).strip()
                     saldo_atual = row[saldo_atual_col - 1]
 
                     if classificacao == "01":
-                        saldo_classificacao_01 += locale.atof(str(saldo_atual))
+                        saldo_classificacao_01 += safe_convert_to_float(
+                            saldo_atual)
                     elif classificacao == "02":
-                        saldo_classificacao_02 += locale.atof(str(saldo_atual))
+                        saldo_classificacao_02 += safe_convert_to_float(
+                            saldo_atual)
 
             # Formatar os resultados como moeda brasileira com "R$"
             saldo_classificacao_01_formatado = locale.currency(
@@ -90,14 +74,18 @@ def show():
             # Comparar os saldos
             if saldo_classificacao_01 == saldo_classificacao_02:
                 cor = "green"
-                mensagem = "Ok, balanço aprovado!"
+                mensagem = "Ok ! balanço aprovado !"
             else:
                 cor = "red"
-                mensagem = "Reprovado! O balanço possui erros!"
+                mensagem = "Reprovado ! O balanço possui erros ! A operadora está sendo notificada !"
 
             # Exibir a bolinha e a mensagem
-            st.markdown(f'<div class="status-indicator {cor}"><div class="circle"></div><span>{
-                        mensagem}</span></div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="status-error-ok {cor}">'
+                f'<div class="circle"></div><span>{mensagem}</span>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
 
         except Exception as e:
             st.write(f"Ocorreu um erro ao processar o arquivo: {e}")

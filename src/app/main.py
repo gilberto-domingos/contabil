@@ -87,17 +87,19 @@ with st.sidebar:
             "Método APLA",
             "Gráficos",
             "Upload arquivo",
+            "Conferênciador",
             "Face login",
             "Imagens",
 
         ],
         icons=[
             "house",
-            "list-check",
+            "file-earmark-text",
             "building",
             "file-earmark-text",
             "image",
             "cloud-arrow-up",
+            "list-check",
             "instagram",
             "clipboard-check",
             # "bar-chart",
@@ -194,6 +196,10 @@ elif selected == "Imagens":
 elif selected == "Upload arquivo":
     from src.app.views import up_files
     up_files.show()
+
+elif selected == "Conferênciador":
+    from src.app.views import conferencer
+    conferencer.show()
 
 elif selected == "Face login":
     from src.app.views import face

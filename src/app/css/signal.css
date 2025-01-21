@@ -1,12 +1,17 @@
 /* Contêiner para a bolinha e o texto */
-.status-indicator {
+.status-error-ok {
     display: flex;
     align-items: center;
+    /* Alinha verticalmente os elementos */
+    justify-content: center;
+    /* Centraliza horizontalmente */
     gap: 10px;
-    margin: 10px auto;
+    margin: 0 auto;
+    /* Centraliza o contêiner */
     font-size: 16px;
     font-weight: bold;
 }
+
 
 /* Estilo para a bolinha */
 .circle {
@@ -16,18 +21,18 @@
 }
 
 /* Cor verde para sucesso */
-.status-indicator.green .circle {
+.status-error-ok.green .circle {
     background-color: green;
 }
 
 /* Cor vermelha para erro */
-.status-indicator.red .circle {
+.status-error-ok.red .circle {
     background-color: red;
 }
 
 /* Texto branco para ambas as situações */
-.status-indicator.green,
-.status-indicator.red {
+.status-error-ok.green,
+.status-error-ok.red {
     color: white;
     text-shadow: 1px 1px 1px black;
 }
