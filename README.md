@@ -1,1 +1,1 @@
-# Projeto contabilidade Conferência de Balanço (experimental Pós-Graduaçao)
+# Projeto contabilidade Conferência de Balanço (experimental Pós-Graduação)
