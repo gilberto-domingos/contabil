@@ -1,1 +1,1 @@
-# Project python Contabil tests 
+# Projeto contabilidade Conferência de Balanço (experimental Pós-Graduaçao)
