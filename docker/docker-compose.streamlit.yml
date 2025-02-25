@@ -1,0 +1,16 @@
+services:
+  application-streamlit:
+    build:
+      context: .
+    image: application-python
+    container_name: application-streamlit
+    ports:
+      - "8501:8501"
+    depends_on:
+      - application-database
+    networks:
+      - application
+
+networks:
+  application:
+    external: true # Rede externa compartilhada

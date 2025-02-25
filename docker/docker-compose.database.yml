@@ -1,0 +1,18 @@
+services:
+  application-database:
+    image: postgres:latest
+    container_name: application-database
+    environment:
+      POSTGRES_USER: mmss
+      POSTGRES_PASSWORD: mmssmmnn
+      POSTGRES_DB: contabil
+    ports:
+      - "5432:5432"
+    networks:
+      - application
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+networks:
+  application:
+    external: true # Rede externa compartilhada

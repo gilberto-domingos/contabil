@@ -1,0 +1,22 @@
+services:
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: mmss
+      RABBITMQ_DEFAULT_PASS: mmssmmnn
+    ports:
+      - "5672:5672" # Comunicação entre serviços
+      - "15672:15672" # Interface Web do RabbitMQ
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - application # Rede compartilhada
+
+networks:
+  application:
+    external: true # Garante que usa a rede existente
+
+volumes:
+  rabbitmq_data:

@@ -1,0 +1,30 @@
+services:
+  application-database:
+    image: postgres:latest
+    container_name: application-database
+    environment:
+      POSTGRES_USER: mmss
+      POSTGRES_PASSWORD: mmssmmnn
+      POSTGRES_DB: contabil
+    ports:
+      - "5432:5432"
+    networks:
+      - application
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  application-streamlit:
+    build:
+      context: .
+    image: application-python
+    container_name: application-streamlit
+    ports:
+      - "8501:8501"
+    depends_on:
+      - application-database
+    networks:
+      - application
+
+networks:
+  application:
+    driver: bridge
