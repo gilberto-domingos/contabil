@@ -90,14 +90,6 @@ def show():
                 cor = "red"
                 mensagem = "Reprovado ! O balanço possui erros ! A operadora está sendo notificada !"
 
-                # Exibir a bolinha e a mensagem
-                st.markdown(
-                    f'<div class="status-error-ok {cor}">'
-                    f'<div class="circle"></div><span>{mensagem}</span>'
-                    f'</div>',
-                    unsafe_allow_html=True,
-                )
-
                 # Quando o balanço for reprovado, executar o publisher.py e o consumer.py
                 try:
                     # Executando o publisher.py
@@ -109,6 +101,14 @@ def show():
                 except subprocess.CalledProcessError as e:
                     st.write(
                         f"Ocorreu um erro ao executar os scripts RabbitMQ: {e}")
+
+            # Exibir a bolinha e a mensagem
+            st.markdown(
+                f'<div class="status-error-ok {cor}">'
+                f'<div class="circle"></div><span>{mensagem}</span>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
 
         except Exception as e:
             st.write(f"Ocorreu um erro ao processar o arquivo: {e}")
