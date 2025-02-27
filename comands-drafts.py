@@ -12,7 +12,13 @@ Agendamento de atendimento
 '''############################################'''
 
 
-############################ TRASFERENCIA DIRETA SEM CONTAINER ################################
+############################ docker  TRASFERENCIA DIRETA SEM CONTAINER ################################
+'''rodar os docker-compose.yml separados '''
+
+docker-compose -f docker-compose.database.yml up -d
+docker-compose -f docker-compose.streamlit.yml up -d
+
+
 
 '''1. Transferência direta do projeto para o container rodando no servidor
 Você pode copiar os arquivos atualizados do projeto diretamente para o container usando o comando docker cp. Isso evita a necessidade de recriar o container ou interromper seu funcionamento. Siga os passos abaixo:
@@ -246,7 +252,7 @@ docker cp mosimann-streamlit:/aContabil/data/relatorio_situationx.xlsx ./relator
 
 
 
-#Agora, no servidor, você vai importar a imagem que você transferiu e criar um novo container:
+#Agora, acessar servidor, você vai importar a imagem que você transferiu e criar um novo container:
 # Acesse o servidor via SSH (se ainda não estiver conectado)
 ssh mosimann@186.250.185.87 -p 8622
 
@@ -1558,3 +1564,13 @@ backgroundColor = "#262730"
 
 **/.git
 autopep8 - -aggressive - - in -place seu_arquivo.py
+
+
+'''/////////////////////////////////// RabbitMQ //////////////////////////////////'''
+''' imagem estiver baixada, você pode rodar o RabbitMQ com : '''
+docker run -d --name rabbitmq \
+  -p 5672:5672 -p 15672:15672 \
+  -e RABBITMQ_DEFAULT_USER=mmss \
+  -e RABBITMQ_DEFAULT_PASS=mmssmmnn \
+  rabbitmq:3-management
+

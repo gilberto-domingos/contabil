@@ -11,6 +11,9 @@ docker-init/
 
 # Arquivos de ambiente
 *.env
+*.private_key.pem
+private_key.pem
+config
 
 # Python bytecode
 __pycache__/
