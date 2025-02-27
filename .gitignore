@@ -14,7 +14,7 @@ docker-init/
 *.private_key.pem
 private_key.pem
 config
-
+comands-drafts.py
 # Python bytecode
 __pycache__/
 *.pyc
