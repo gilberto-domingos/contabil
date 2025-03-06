@@ -3,12 +3,6 @@ from openpyxl import load_workbook
 import locale
 import subprocess
 from dotenv import load_dotenv
-import os
-
-
-secret_key_path = os.getenv("SECRET_KEY_FILE", "private_key.pem")
-with open(secret_key_path, "r") as f:
-    secret_key = f.read().strip()
 
 
 load_dotenv()  # Carrega variáveis de ambiente
