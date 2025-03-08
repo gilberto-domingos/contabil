@@ -16,7 +16,7 @@ load_dotenv()  # Carrega variáveis de ambiente
 class RabbitMqPublisher:
     def __init__(self) -> None:
         self.__host = "186.250.185.87"  # "localhost"
-        self.__port = 15672
+        self.__port = 5672
         self.__username = os.getenv("RABBITMQ_USER")
         self.__password = os.getenv("RABBITMQ_PASSWORD")
         self.__exchange = "data_exchange"
