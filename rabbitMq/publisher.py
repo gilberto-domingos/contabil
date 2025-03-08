@@ -2,40 +2,55 @@ import pika
 import json
 import os
 from dotenv import load_dotenv
-import os
 
+# Carrega as variáveis de ambiente
+load_dotenv()
 
+# Lê a chave secreta
 secret_key_path = os.getenv("SECRET_KEY_FILE", "private_key.pem")
 with open(secret_key_path, "r") as f:
     secret_key = f.read().strip()
 
 
-load_dotenv()  # Carrega variáveis de ambiente
-
-
 class RabbitMqPublisher:
     def __init__(self) -> None:
+        # Configurações do RabbitMQ
         self.__host = "186.250.185.87"  # "localhost"
         self.__port = 5672
         self.__username = os.getenv("RABBITMQ_USER")
         self.__password = os.getenv("RABBITMQ_PASSWORD")
         self.__exchange = "data_exchange"
         self.__routing_key = "data_route"
+
+        # Verifica se o usuário e a senha foram carregados corretamente
+        if not self.__username or not self.__password:
+            raise ValueError(
+                "Usuário ou senha do RabbitMQ não definidos nas variáveis de ambiente.")
+
         self.__channel = self.__create_channel()
 
     def __create_channel(self):
         """Cria e retorna um canal para publicar mensagens."""
-        connection_parameters = pika.ConnectionParameters(
-            host=self.__host,
-            port=self.__port,
-            credentials=pika.PlainCredentials(
-                username=self.__username,
-                password=self.__password
+        try:
+            connection_parameters = pika.ConnectionParameters(
+                host=self.__host,
+                port=self.__port,
+                credentials=pika.PlainCredentials(
+                    username=self.__username,
+                    password=self.__password
+                )
             )
-        )
+            connection = pika.BlockingConnection(connection_parameters)
+            channel = connection.channel()
 
-        channel = pika.BlockingConnection(connection_parameters).channel()
-        return channel
+            # Declara a exchange para garantir que ela existe
+            channel.exchange_declare(
+                exchange=self.__exchange, exchange_type='direct')
+
+            return channel
+        except pika.exceptions.AMQPConnectionError as e:
+            print(f"Erro ao conectar ao RabbitMQ: {e}")
+            raise
 
     def send_message(self, message: dict):
         """Publica uma mensagem no RabbitMQ."""
@@ -44,7 +59,8 @@ class RabbitMqPublisher:
             routing_key=self.__routing_key,
             body=json.dumps(message),
             properties=pika.BasicProperties(
-                delivery_mode=2)  # Mensagem persistente
+                delivery_mode=2  # Mensagem persistente
+            )
         )
         print(f"Mensagem enviada: {message}")
 
