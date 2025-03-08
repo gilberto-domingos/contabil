@@ -42,7 +42,7 @@ class EmailSender:
 
 class RabbitMqConsumer:
     def __init__(self, callback) -> None:
-        self.__host = "localhost"
+        self.__host = "186.250.185.87"
         self.__port = 5672
         self.__username = os.getenv("RABBITMQ_USER")
         self.__password = os.getenv("RABBITMQ_PASSWORD")
