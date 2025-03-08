@@ -9,7 +9,7 @@ services:
     depends_on:
       - application-database
     networks:
-      - application
+      - bridge
 
 networks:
   application:

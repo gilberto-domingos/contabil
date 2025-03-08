@@ -9,7 +9,8 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - application
+      - bridge # Usando a rede bridge padrão
+
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
@@ -23,8 +24,8 @@ services:
     depends_on:
       - application-database
     networks:
-      - application
+      - bridge # Usando a rede bridge padrão
 
 networks:
-  application:
-    driver: bridge
+  bridge:
+    external: true # Indica que a rede é a rede bridge padrão do Docker
