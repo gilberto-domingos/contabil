@@ -10,7 +10,15 @@ services:
       - application-database
     networks:
       - bridge
+    environment:
+      - MY_VAR=value # Definindo variáveis de ambiente diretamente
+      - ANOTHER_VAR=another_value
+    volumes:
+      - ./config:/app/config # Mapeando diretório local para o container (preservando configurações)
+      - ./data:/app/data # Para armazenar dados persistentes
+    env_file:
+      - .env # Carregando variáveis de ambiente de um arquivo .env (se necessário)
 
 networks:
-  application:
-    external: true # Rede externa compartilhada
+  bridge:
+    external: true

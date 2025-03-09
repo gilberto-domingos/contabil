@@ -7,16 +7,16 @@ services:
       RABBITMQ_DEFAULT_USER: mmss
       RABBITMQ_DEFAULT_PASS: mmssmmnn
     ports:
-      - "5672:5672" # Comunicação entre serviços
-      - "15672:15672" # Interface Web do RabbitMQ
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
-      - bridge # Rede compartilhada
+      - bridge
 
 networks:
-  application:
-    external: true # Garante que usa a rede existente
+  bridge:
+    external: true
 
 volumes:
   rabbitmq_data:

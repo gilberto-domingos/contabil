@@ -9,9 +9,9 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - bridge # Usando a rede bridge padrão
-
+      - mosimann_application
     volumes:
+      - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   application-streamlit:
@@ -23,9 +23,38 @@ services:
       - "8501:8501"
     depends_on:
       - application-database
+      - rabbitmq
     networks:
-      - bridge # Usando a rede bridge padrão
+      - mosimann_application
+    environment:
+      - MY_VAR=value
+      - ANOTHER_VAR=another_value
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+    env_file:
+      - .env
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: mmss
+      RABBITMQ_DEFAULT_PASS: mmssmmnn
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - mosimann_application
 
 networks:
-  bridge:
-    external: true # Indica que a rede é a rede bridge padrão do Docker
+  mosimann_application:
+    external: true
+    driver: bridge
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
