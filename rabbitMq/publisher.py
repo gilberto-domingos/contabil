@@ -13,7 +13,7 @@ with open(secret_key_path, "r") as f:
 
 class RabbitMqPublisher:
     def __init__(self) -> None:
-        self.__host = "186.250.185.87"
+        self.__host = os.getenv("RABBITMQ_HOST", "186.250.185.87")
         self.__port = 5672
         self.__username = os.getenv("RABBITMQ_USER")
         self.__password = os.getenv("RABBITMQ_PASSWORD")
@@ -27,7 +27,6 @@ class RabbitMqPublisher:
         self.__channel = self.__create_channel()
 
     def __create_channel(self):
-        """Cria e retorna um canal para publicar mensagens."""
         try:
             connection_parameters = pika.ConnectionParameters(
                 host=self.__host,
@@ -49,7 +48,6 @@ class RabbitMqPublisher:
             raise
 
     def send_message(self, message: dict):
-        """Publica uma mensagem no RabbitMQ."""
         self.__channel.basic_publish(
             exchange=self.__exchange,
             routing_key=self.__routing_key,
