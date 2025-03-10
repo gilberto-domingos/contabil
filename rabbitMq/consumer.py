@@ -5,9 +5,8 @@ import smtplib
 from dotenv import load_dotenv
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import os
 
-load_dotenv()  # Carrega variáveis de ambiente
+load_dotenv()
 
 secret_key_path = os.getenv("SECRET_KEY_FILE", "private_key.pem")
 with open(secret_key_path, "r") as f:
@@ -42,10 +41,11 @@ class EmailSender:
 
 class RabbitMqConsumer:
     def __init__(self, callback) -> None:
-        self.__host = "186.250.185.87"
+        self.__host = os.getenv("RABBITMQ_HOST", "rabbitmq")
         self.__port = 5672
         self.__username = os.getenv("RABBITMQ_USER")
         self.__password = os.getenv("RABBITMQ_PASSWORD")
+        self.__vhost = os.getenv("RABBITMQ_VHOST", "/")
         self.__queue = "data_queue"
         self.__callback = callback
         self.__channel = self.__create_channel()
@@ -55,6 +55,7 @@ class RabbitMqConsumer:
         connection_parameters = pika.ConnectionParameters(
             host=self.__host,
             port=self.__port,
+            virtual_host=self.__vhost,  # Adicionando o vhost
             credentials=pika.PlainCredentials(
                 username=self.__username,
                 password=self.__password
@@ -95,7 +96,6 @@ def email_callback(ch, method, properties, body):
         print(f"Erro ao processar mensagem: {e}")
 
 
-# Inicia o consumidor
 if __name__ == "__main__":
     rabbitmq_consumer = RabbitMqConsumer(email_callback)
     rabbitmq_consumer.start()

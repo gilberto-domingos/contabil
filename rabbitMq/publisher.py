@@ -5,15 +5,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-secret_key_path = os.getenv(
-    "SECRET_KEY_FILE", "/application/rabbitMq/private_key.pem")
+secret_key_path = os.getenv("SECRET_KEY_FILE", "private_key.pem")
 with open(secret_key_path, "r") as f:
     secret_key = f.read().strip()
 
 
 class RabbitMqPublisher:
     def __init__(self) -> None:
-        self.__host = os.getenv("RABBITMQ_HOST", "186.250.185.87")
+        self.__host = os.getenv("RABBITMQ_HOST", "rabbitmq")
+        self.__virtual_host = os.getenv(
+            "RABBITMQ_VHOST", "/")
         self.__port = 5672
         self.__username = os.getenv("RABBITMQ_USER")
         self.__password = os.getenv("RABBITMQ_PASSWORD")
@@ -31,6 +32,7 @@ class RabbitMqPublisher:
             connection_parameters = pika.ConnectionParameters(
                 host=self.__host,
                 port=self.__port,
+                virtual_host=self.__virtual_host,
                 credentials=pika.PlainCredentials(
                     username=self.__username,
                     password=self.__password
@@ -48,6 +50,7 @@ class RabbitMqPublisher:
             raise
 
     def send_message(self, message: dict):
+        """Publica uma mensagem no RabbitMQ."""
         self.__channel.basic_publish(
             exchange=self.__exchange,
             routing_key=self.__routing_key,
