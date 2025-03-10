@@ -29,10 +29,14 @@ class EmailSender:
         msg.attach(MIMEText(body, "plain"))
 
         try:
+            print(
+                f"Conectando ao servidor SMTP: {self.smtp_server}:{self.smtp_port}")
             server = smtplib.SMTP(self.smtp_server, self.smtp_port)
             server.starttls()
             server.login(self.email_user, self.email_password)
-            server.sendmail(self.email_user, to_email, msg.as_string())
+            print(f"Enviando e-mail para: {to_email}")
+            server.sendmail(self.email_user, to_email,
+                            msg.as_string())
             server.quit()
             print(f"E-mail enviado para {to_email}")
         except Exception as e:
