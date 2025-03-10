@@ -42,7 +42,7 @@ class RabbitMqPublisher:
             channel = connection.channel()
 
             channel.exchange_declare(
-                exchange=self.__exchange, exchange_type='direct')
+                exchange=self.__exchange, exchange_type='direct', durable=True)
 
             return channel
         except pika.exceptions.AMQPConnectionError as e:
