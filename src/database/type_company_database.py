@@ -7,7 +7,6 @@ class Database:
         self.conn = None
 
     def connect(self):
-        """Estabelece conexão com o banco de dados se não estiver conectado."""
         if self.conn is None or self.conn.closed:
             try:
                 self.conn = psycopg2.connect(
@@ -23,7 +22,6 @@ class Database:
                 raise Exception(f"Erro ao conectar ao banco de dados: {e}")
 
     def ensure_connection(self):
-        """Garante que a conexão está ativa, tentando reconectar se necessário."""
         if self.conn is None or self.conn.closed:
             self.connect()
         if self.conn is None or self.conn.closed:
@@ -42,7 +40,6 @@ class Database:
                 f"Erro ao buscar tipos de empresa no banco de dados: {e}")
 
     def get_type_company_by_cod(self, cod_company):
-        """Obtém um tipo de empresa pelo código."""
         self.ensure_connection()
         cur = self.conn.cursor(cursor_factory=RealDictCursor)
         try:
@@ -70,7 +67,6 @@ class Database:
                 f"Erro ao buscar tipos de empresa pela descrição: {e}")
 
     def update_type_company(self, id, new_cod, new_descr):
-        """Atualiza um tipo de empresa no banco de dados."""
         self.ensure_connection()
         cur = self.conn.cursor()
         try:

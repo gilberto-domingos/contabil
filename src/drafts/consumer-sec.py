@@ -20,22 +20,10 @@ class EmailSender:
         self.email_user = "jrdomingosjr00@gmail.com"
         self.email_password = os.getenv("EMAIL_PASSWORD")
 
-        # Lista de destinatários adicionais
-        self.additional_recipients = [
-            "ana.voss99@gmail.com",
-            "pessoal@mosimann.com.br",
-            "itamar@mosimann.com.br",
-            "itamosimann@gmail.com",
-            "jrdomingosjr00@gmail.com"
-        ]
-
     def send_email(self, to_email, subject, body):
-        # Inclui os destinatários extras
-        recipients = [to_email] + self.additional_recipients
-
         msg = MIMEMultipart()
         msg["From"] = self.email_user
-        msg["To"] = ", ".join(recipients)
+        msg["To"] = to_email
         msg["Subject"] = subject
         msg.attach(MIMEText(body, "plain"))
 
@@ -45,10 +33,11 @@ class EmailSender:
             server = smtplib.SMTP(self.smtp_server, self.smtp_port)
             server.starttls()
             server.login(self.email_user, self.email_password)
-            print(f"Enviando e-mail para: {recipients}")
-            server.sendmail(self.email_user, recipients, msg.as_string())
+            print(f"Enviando e-mail para: {to_email}")
+            server.sendmail(self.email_user, to_email,
+                            msg.as_string())
             server.quit()
-            print(f"E-mail enviado com sucesso para: {', '.join(recipients)}")
+            print(f"E-mail enviado para {to_email}")
         except Exception as e:
             print(f"Erro ao enviar e-mail: {e}")
 
