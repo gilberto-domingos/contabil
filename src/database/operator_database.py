@@ -14,7 +14,7 @@ class Database:
                     dbname="contabil",
                     user="mmss",
                     password="mmssmmnn",
-                    host="186.250.185.87",  # mudar antes de enviar para servidor
+                    host="186.250.185.87",
                     port=5432
                 )
                 print("Conexão com o banco de dados estabelecida.")
@@ -44,7 +44,7 @@ class Database:
                 (cod_operator, cnpj_operator, name_operator)
             )
             self.conn.commit()
-            return cur.fetchone()[0]  # Retorna o ID da operadora inserida
+            return cur.fetchone()[0]
         except psycopg2.Error as e:
             self.conn.rollback()
             raise Exception(f"Erro ao salvar no banco de dados: {e}")
@@ -58,7 +58,7 @@ class Database:
                 "SELECT * FROM operadoras WHERE id = %s",
                 (operator_id,)
             )
-            return cur.fetchone()  # Retorna os dados da operadora ou None
+            return cur.fetchone()
         except psycopg2.Error as e:
             raise Exception(f"Erro ao buscar operadora no banco de dados: {e}")
 
@@ -76,7 +76,7 @@ class Database:
                 (cod_operator, cnpj_operator, name_operator, operator_id)
             )
             self.conn.commit()
-            return cur.rowcount  # Retorna o número de linhas afetadas
+            return cur.rowcount
         except psycopg2.Error as e:
             self.conn.rollback()
             raise Exception(
@@ -92,7 +92,7 @@ class Database:
                 (operator_id,)
             )
             self.conn.commit()
-            return cur.rowcount  # Retorna o número de linhas afetadas
+            return cur.rowcount
         except psycopg2.Error as e:
             self.conn.rollback()
             raise Exception(
@@ -104,7 +104,7 @@ class Database:
         cur = self.conn.cursor(cursor_factory=RealDictCursor)
         try:
             cur.execute("SELECT * FROM operadoras")
-            return cur.fetchall()  # Retorna todas as operadoras
+            return cur.fetchall()
         except psycopg2.Error as e:
             raise Exception(
                 f"Erro ao buscar todas as operadoras no banco de dados: {e}")
@@ -118,7 +118,7 @@ class Database:
                 "SELECT * FROM operadoras WHERE cod_operator = %s",
                 (cod_operator,)
             )
-            return cur.fetchone()  # Retorna os dados da operadora ou None
+            return cur.fetchone()
         except psycopg2.Error as e:
             raise Exception(f"Erro ao buscar operadora pelo código: {e}")
 
@@ -129,9 +129,8 @@ class Database:
         try:
             cur.execute(
                 "SELECT * FROM operadoras WHERE name_operator ILIKE %s",
-                # Usa LIKE para buscar nomes semelhantes
                 (f"%{name_operator}%",)
             )
-            return cur.fetchall()  # Retorna todas as operadoras encontradas
+            return cur.fetchall()
         except psycopg2.Error as e:
             raise Exception(f"Erro ao buscar operadoras pelo nome: {e}")

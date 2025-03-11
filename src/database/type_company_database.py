@@ -31,6 +31,7 @@ class Database:
                 "Falha ao estabelecer conexão com o banco de dados.")
 
     def get_all_type_companies(self):
+        """Obtém todos os tipos de empresas."""
         self.ensure_connection()
         cur = self.conn.cursor(cursor_factory=RealDictCursor)
         try:
@@ -41,6 +42,7 @@ class Database:
                 f"Erro ao buscar tipos de empresa no banco de dados: {e}")
 
     def get_type_company_by_cod(self, cod_company):
+        """Obtém um tipo de empresa pelo código."""
         self.ensure_connection()
         cur = self.conn.cursor(cursor_factory=RealDictCursor)
         try:
@@ -54,6 +56,7 @@ class Database:
                 f"Erro ao buscar tipo de empresa pelo código: {e}")
 
     def get_type_company_by_descr(self, descr_company):
+        """Obtém tipos de empresa pela descrição (parcial)."""
         self.ensure_connection()
         cur = self.conn.cursor(cursor_factory=RealDictCursor)
         try:
@@ -84,5 +87,26 @@ class Database:
             self.conn.rollback()
             raise Exception(
                 f"Erro ao atualizar tipo de empresa no banco de dados: {e}")
+        finally:
+            cur.close()
+
+    def insert_type_company(self, cod_company, descr_company):
+        """Insere um novo tipo de empresa no banco de dados."""
+        self.ensure_connection()
+        cur = self.conn.cursor()
+        try:
+            cur.execute(
+                """
+                INSERT INTO type_companies (cod_company, descr_company)
+                VALUES (%s, %s)
+                RETURNING id;
+                """,
+                (cod_company, descr_company)
+            )
+            self.conn.commit()
+            return cur.fetchone()[0]
+        except psycopg2.Error as e:
+            self.conn.rollback()
+            raise Exception(f"Erro ao salvar no banco de dados: {e}")
         finally:
             cur.close()

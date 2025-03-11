@@ -44,7 +44,7 @@ class Database:
                 (cod_cell, name_cell, email_cell)
             )
             self.conn.commit()
-            return cur.fetchone()[0]  # Retorna o ID da célula inserida
+            return cur.fetchone()[0]
         except psycopg2.Error as e:
             self.conn.rollback()
             raise Exception(f"Erro ao salvar no banco de dados: {e}")
@@ -58,7 +58,7 @@ class Database:
                 "SELECT * FROM cells WHERE id = %s",
                 (cell_id,)
             )
-            return cur.fetchone()  # Retorna os dados da célula ou None
+            return cur.fetchone()
         except psycopg2.Error as e:
             raise Exception(f"Erro ao buscar célula no banco de dados: {e}")
 
@@ -76,7 +76,7 @@ class Database:
                 (cod_cell, name_cell, email_cell, cell_id)
             )
             self.conn.commit()
-            return cur.rowcount  # Retorna o número de linhas afetadas
+            return cur.rowcount
         except psycopg2.Error as e:
             self.conn.rollback()
             raise Exception(
@@ -92,7 +92,7 @@ class Database:
                 (cell_id,)
             )
             self.conn.commit()
-            return cur.rowcount  # Retorna o número de linhas afetadas
+            return cur.rowcount
         except psycopg2.Error as e:
             self.conn.rollback()
             raise Exception(f"Erro ao excluir célula no banco de dados: {e}")
@@ -103,7 +103,7 @@ class Database:
         cur = self.conn.cursor(cursor_factory=RealDictCursor)
         try:
             cur.execute("SELECT * FROM cells")
-            return cur.fetchall()  # Retorna todas as células
+            return cur.fetchall()
         except psycopg2.Error as e:
             raise Exception(
                 f"Erro ao buscar todas as células no banco de dados: {e}")
@@ -117,7 +117,7 @@ class Database:
                 "SELECT * FROM cells WHERE cod_cell = %s",
                 (cod_cell,)
             )
-            return cur.fetchone()  # Retorna os dados da célula ou None
+            return cur.fetchone()
         except psycopg2.Error as e:
             raise Exception(f"Erro ao buscar célula pelo código: {e}")
 
@@ -130,6 +130,6 @@ class Database:
                 "SELECT * FROM cells WHERE name_cell ILIKE %s",
                 (f"%{name_cell}%",)
             )
-            return cur.fetchall()  # Retorna todas as células encontradas
+            return cur.fetchall()
         except psycopg2.Error as e:
             raise Exception(f"Erro ao buscar células pelo nome: {e}")
